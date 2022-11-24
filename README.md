@@ -1,6 +1,11 @@
-# tool_template_python
+# Moving window dispersion functions
 
-This is the template for a generic containerized Python tool. This template can be used to generate new Github repositories from it.
+This tool is a generic moving window - dispersion function / variogram calculation tool,
+implemented as a gernalized version of Mälicke et al. (2020).
+
+  Mälicke, M., Hassler, S. K., Blume, T., Weiler, M., & Zehe, E. (2020). Soil moisture: variable in space but redundant in time. Hydrology and Earth System Sciences, 24(5), 2633-2653.
+
+This Readme still contains the descriptions of the original template and will be updated soon.
 
 ## How generic?
 
@@ -32,7 +37,7 @@ Each container needs at least the following structure:
 
 You can build the image from within the root of this repo by
 ```
-docker build -t tbr_python_tempate .
+docker build -t tbr_dispersion .
 ```
 
 Use any tag you like. If you want to run and manage the container with [toolbox-runner](https://github.com/hydrocode-de/tool-runner)
@@ -68,14 +73,4 @@ foobar.run(result_path='./', foo_int=1337, foo_string="Please change me")
 ```
 The example above will create a temporary file structure to be mounted into the container and then create a `.tar.gz` on termination of all 
 inputs, outputs, specifications and some metadata, including the image sha256 used to create the output in the current working directory.
-
-## What about real tools, no foobar?
-
-Yeah. 
-
-1. change the `tool.yml` to describe your actual tool
-2. add any `pip install` or `apt-get install` needed to the dockerfile
-3. add additional source code to `/src`
-4. change the `run.py` to consume parameters and data from `/in` and useful output in `out`
-5. build, run, rock!
 
