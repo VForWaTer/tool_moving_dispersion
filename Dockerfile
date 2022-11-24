@@ -1,12 +1,12 @@
 # Pull any base image that includes python3
-FROM python:3.10
+FROM python:3.10.8
 
 # install the toolbox runner tools
-RUN pip install json2args
+RUN pip install json2args==0.4.0
 
 
 # Do anything you need to install tool dependencies here
-RUN echo "Replace this line with a tool"
+RUN pip install scikit-gstat==1.0.2 tqdm==4.64.1
 
 # create the tool input structure
 RUN mkdir /in
