@@ -3,7 +3,7 @@
 This tool is a generic moving window - dispersion function / variogram calculation tool,
 implemented as a gernalized version of Mälicke et al. (2020).
 
-  Mälicke, M., Hassler, S. K., Blume, T., Weiler, M., & Zehe, E. (2020). Soil moisture: variable in space but redundant in time. Hydrology and Earth System Sciences, 24(5), 2633-2653.
+> Mälicke, M., Hassler, S. K., Blume, T., Weiler, M., & Zehe, E. (2020). Soil moisture: variable in space but redundant in time. Hydrology and Earth System Sciences, 24(5), 2633-2653.
 
 This Readme still contains the descriptions of the original template and will be updated soon.
 
