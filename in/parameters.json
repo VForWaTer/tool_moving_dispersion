@@ -1,11 +1,12 @@
 {
-    "foobar": {
-        "foo_int": 42,
-        "foo_float": 13.37,
-        "foo_string": "Never eat yellow snow",
-        "foo_enum": "bar",
-        "foo_array": [34, 55, 23, 43, 23],
-        "foo_matrix": "/in/foo_matrix.dat",
-        "foo_csv": "/in/foo_csv.csv"
+    "convert-input": {
+        "positions": "/in/positions.csv",
+        "data": "/in/data.csv"
+    },
+    "moving-window": {
+        "positions": "/in/positions.dat",
+        "data": "/in/data.dat",
+        "variogram": "/in/variogram.json",
+        "window_size": 30
     }
 }
