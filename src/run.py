@@ -1,23 +1,95 @@
 import os
-from datetime import datetime as dt
-from pprint import pprint
+import sys
+import json
 
 from json2args import get_parameter
+import skgstat as skg
+import numpy as np
+import tqdm
 
-# parse parameters
+# load some helper functions
+from tool_lib import align_data, get_strides
+
+# get the toolname
+toolname = os.environ.get('TOOL_RUN', 'moving-window').lower()
+
+# get the parameterization
 kwargs = get_parameter()
 
-# check if a toolname was set in env
-toolname = os.environ.get('TOOL_RUN', 'foobar').lower()
+# switch the toolname
+if toolname == 'convert-input':
+    try:
+        positions, data = align_data(**kwargs)
+    except Exception as e:
+        print(str(e))
+        raise e
 
-# switch the tool
-if toolname == 'foobar':
-    # RUN the tool here and create the output in /out
-    print('This toolbox does not include any tool. Did you run the template?\n')
+    # write the files
+    np.savetxt('/out/positions.dat', positions)
+    np.savetxt('/out/data.dat', data)
+
+# moving window
+elif toolname == 'moving-window':
+    # get all needed parameters
+    try:
+        # align the input data
+        positions, data = align_data(**kwargs)
+
+        # get the params
+        window_size = kwargs['window_size']
+
+        # build the strides-iterator
+        strides = get_strides(data, positions, window_size, yield_pos=True)
+
+        # get the variogram
+        _v = kwargs.get('variogram', {})
+        if isinstance(_v, str):
+            with open(_v) as f:
+                vario_params = json.load(f)
+        else:
+            vario_params = _v
+
+    except Exception as e:
+        print(str(e))
+        raise e
+
+    # container for the variograms
+    # TODO: this could be replaced by the 
+    varios = []
+
+    # go for each stride 
+    for i, (pos, obs) in enumerate(tqdm.tqdm(strides, total=data.shape[1] - window_size)):
+        # remove NaN
+        vals = obs[~np.isnan(obs)]
+        coords = pos[~np.isnan(obs)]
+
+        # here it is possible, that all obs are NaN
+        if len(vals) == 0:
+            print(f'{i}-All NaN input data at position: {i}')
+            continue
+        # build the variogram
+        varios.append(skg.Variogram(coords, vals, **vario_params))
+
+    # store the results
+    params = np.asarray([v.parameters for v in varios])
+    np.savetxt('/out/variogram_parameters.dat', params)
+
+    # store empirical as .dat if lags are not auto-derived
+    emp = [v.experimental for v in varios]
+    if all([v.n_lags == varios[0].n_lags for v in varios]):
+        np.savetxt('/out/empirical_variograms.dat', np.asarray(emp))
     
-    # write parameters to STDOUT.log
-    pprint(kwargs)
+    # as a json in any case
+    with open('/out/empirical_variograms.json', 'w') as f:
+        json.dump(dict(
+            variograms=[e.tolist() for e in emp], 
+            bins=[v.bins.tolist() for v in varios]
+        ), f)
+    
+    # save back the positions and data as well
+    np.savetxt('/out/positions.dat', positions)
+    np.savetxt('/out/data.dat', data)
 
-# In any other case, it was not clear which tool to run
+# no tool selected
 else:
-    raise AttributeError(f"[{dt.now().isocalendar()}] Either no TOOL_RUN environment variable available, or '{toolname}' is not valid.\n")
+    sys.exit(f'The tool {toolname} is not known.')
