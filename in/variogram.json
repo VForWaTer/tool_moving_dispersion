@@ -1,0 +1,6 @@
+{
+    "model": "exponential",
+    "n_lags": 5,
+    "maxlag": "median",
+    "bin_func": "uniform"
+}
