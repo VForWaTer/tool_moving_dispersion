@@ -40,5 +40,6 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v3
         with:
+          context: .
           push: true
           tags:  vforwater/tbr_moving_dispersion:latest, vforwater/tbr_moving_dispersion:${{ github.ref_name }}
