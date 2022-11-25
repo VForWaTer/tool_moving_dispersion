@@ -30,10 +30,17 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ghcr.io/vforwater/tbr_moving_dispersion
+
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
           context: .
           push: true
-          tags:  vforwater/tbr_moving_dispersion:latest, vforwater/tbr_moving_dispersion:${{ github.ref_name }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
